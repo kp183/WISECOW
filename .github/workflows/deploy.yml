@@ -4,11 +4,12 @@ on:
   push:
     branches: [main]
 
+env:
+  IMAGE: kp183/wisecow
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      IMAGE: ${{ secrets.DOCKER_USERNAME }}/wisecow
     steps:
       - uses: actions/checkout@v4
 
@@ -28,8 +29,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      IMAGE: ${{ secrets.DOCKER_USERNAME }}/wisecow
     steps:
       - uses: actions/checkout@v4
 
