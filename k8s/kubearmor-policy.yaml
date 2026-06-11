@@ -1,0 +1,74 @@
+# Zero-trust policy for the wisecow deployment.
+# Default posture is Block — only explicitly allowed binaries,
+# file paths, and protocols are permitted.
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: wisecow-zero-trust
+  namespace: default
+spec:
+  severity: 5
+  selector:
+    matchLabels:
+      app: wisecow
+
+  process:
+    matchPaths:
+      # shell and coreutils needed by wisecow.sh
+      - path: /usr/bin/bash
+      - path: /bin/bash
+      - path: /usr/bin/env
+      - path: /usr/bin/cat
+      - path: /bin/cat
+      - path: /usr/bin/rm
+      - path: /bin/rm
+      - path: /usr/bin/sleep
+      - path: /bin/sleep
+      - path: /usr/bin/mkfifo
+      # actual app binaries — these live in /usr/games
+      - path: /usr/games/cowsay
+      - path: /usr/games/fortune
+      # netcat for the http listener
+      - path: /usr/bin/nc
+      - path: /usr/bin/nc.openbsd
+    action: Allow
+
+  file:
+    matchDirectories:
+      # lock down sensitive paths
+      - dir: /etc/
+        recursive: true
+        action: Block
+      - dir: /root/
+        recursive: true
+        action: Block
+      - dir: /var/log/
+        recursive: true
+        action: Block
+    matchPaths:
+      # DNS and hostname resolution must still work
+      - path: /etc/hosts
+        readOnly: true
+        action: Allow
+      - path: /etc/hostname
+        readOnly: true
+        action: Allow
+      - path: /etc/resolv.conf
+        readOnly: true
+        action: Allow
+      - path: /etc/nsswitch.conf
+        readOnly: true
+        action: Allow
+
+  network:
+    matchProtocols:
+      - protocol: tcp
+        action: Allow
+      - protocol: udp
+        action: Allow
+      - protocol: icmp
+        action: Block
+      - protocol: raw
+        action: Block
+
+  action: Block
