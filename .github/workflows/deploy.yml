@@ -32,9 +32,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: azure/k8s-set-context@v4
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: set kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ~/.kube/config
+          echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: patch image tag
         run: |
