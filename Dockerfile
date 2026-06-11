@@ -13,7 +13,7 @@ RUN apt-get update \
 
 WORKDIR /app
 COPY wisecow.sh .
-RUN chmod +x wisecow.sh
+RUN sed -i 's/\r$//' wisecow.sh && chmod +x wisecow.sh
 
 EXPOSE 4499
 
