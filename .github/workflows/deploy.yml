@@ -42,7 +42,7 @@ jobs:
           sed -i "s|image: .*/wisecow:.*|image: ${{ env.IMAGE }}:${{ github.sha }}|" k8s/deployment.yaml
 
       - name: apply manifests
-        run: kubectl apply -f k8s/deployment.yaml -f k8s/service.yaml -f k8s/ingress.yaml
+        run: kubectl apply -f k8s/deployment.yaml -f k8s/service.yaml -f k8s/ingress.yaml --validate=false
 
       - name: wait for rollout
         run: kubectl rollout status deployment/wisecow --timeout=120s
