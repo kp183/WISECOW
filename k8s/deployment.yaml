@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: wisecow
-          image: kp294/wisecow:latest
+          image: kp183/wisecow:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4499
